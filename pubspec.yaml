@@ -11,6 +11,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  camera: ^0.11.0+2
+  path_provider: ^2.1.4
+  share_plus: ^10.0.2
+  image_picker: ^1.1.2
+  exif: ^3.3.0
 
 dev_dependencies:
   flutter_test:
