@@ -94,7 +94,6 @@ class StorageService {
     return savedFile;
   }
 
-  // ייבוא תמונות מהגלריה עם קריאת תאריך הצילום המקורי מתוך נתוני EXIF
   static Future<int> importGalleryImages(
       Directory clientDir, List<XFile> pickedFiles) async {
     int count = 0;
@@ -111,7 +110,6 @@ class StorageService {
     return count;
   }
 
-  // שליפת תאריך הצילום המקורי מ-EXIF (פורמט סטנדרטי: "YYYY:MM:DD HH:MM:SS")
   static Future<DateTime> _extractExifDate(File file) async {
     try {
       final bytes = await file.readAsBytes();
@@ -122,7 +120,7 @@ class StorageService {
           data['Image DateTime'];
 
       if (dateTag != null) {
-        final rawDate = dateTag.printable.trim(); // למשל: "2025:08:14 16:42:10"
+        final rawDate = dateTag.printable.trim();
         final parts = rawDate.split(' ');
         if (parts.length == 2) {
           final dateParts = parts[0].split(':');
@@ -143,7 +141,6 @@ class StorageService {
       debugPrint('EXIF read fallback: $e');
     }
 
-    // ברירת מחדל אם אין נתוני EXIF בקובץ (למשל תמונה מוואטסאפ)
     try {
       return await file.lastModified();
     } catch (_) {
