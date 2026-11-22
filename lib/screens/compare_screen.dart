@@ -28,8 +28,7 @@ class CompareScreen extends StatefulWidget {
 class _CompareScreenState extends State<CompareScreen> {
   late List<File> _selectedImages;
   late List<TransformationController> _controllers;
-  int _layoutIndex =
-      0; // אינדקס התבנית הנבחרת מתוך התבניות הזמינות למספר התמונות
+  int _layoutIndex = 0;
   final GlobalKey _comparisonKey = GlobalKey();
   bool _isSharing = false;
 
@@ -49,7 +48,6 @@ class _CompareScreenState extends State<CompareScreen> {
     super.dispose();
   }
 
-  // הוספת משבצת תמונה (עד מקסימום 4)
   void _addSlot() {
     if (_selectedImages.length >= 4 || widget.allImages.isEmpty) return;
     setState(() {
@@ -59,7 +57,6 @@ class _CompareScreenState extends State<CompareScreen> {
     });
   }
 
-  // הסרת משבצת תמונה (מינימום 2)
   void _removeSlot(int index) {
     if (_selectedImages.length <= 2) return;
     setState(() {
@@ -70,7 +67,6 @@ class _CompareScreenState extends State<CompareScreen> {
     });
   }
 
-  // החלפת תמונה במשבצת ספציפית
   Future<void> _pickImageForSlot(int slotIndex) async {
     await showModalBottomSheet(
       context: context,
@@ -117,6 +113,8 @@ class _CompareScreenState extends State<CompareScreen> {
   Future<void> _shareComparison() async {
     final s = AppStrings.of(context);
     setState(() => _isSharing = true);
+    // המתנה קצרה שהאייקונים הקטנים יוסתרו לפני צילום המסך
+    await Future.delayed(const Duration(milliseconds: 50));
     try {
       final boundary = _comparisonKey.currentContext?.findRenderObject()
           as RenderRepaintBoundary?;
@@ -140,27 +138,15 @@ class _CompareScreenState extends State<CompareScreen> {
     }
   }
 
-  // אייקוני תבניות התצוגה בהתאם לכמות התמונות (2, 3 או 4)
   List<IconData> _getAvailableTemplateIcons() {
     switch (_selectedImages.length) {
       case 2:
-        return [
-          Icons.view_column,
-          Icons.view_agenda
-        ]; // זה לצד זה | למעלה ולמטה
+        return [Icons.view_column, Icons.view_agenda];
       case 3:
-        return [
-          Icons.view_week,
-          Icons.view_quilt,
-          Icons.dashboard
-        ]; // 3 עמודות | 1+2 אנכי | 1+2 אופקי
+        return [Icons.view_week, Icons.view_quilt, Icons.dashboard];
       case 4:
       default:
-        return [
-          Icons.grid_view,
-          Icons.view_week,
-          Icons.view_quilt
-        ]; // רשת 2x2 | 4 עמודות | 1 גדולה + 3
+        return [Icons.grid_view, Icons.view_week, Icons.view_quilt];
     }
   }
 
@@ -192,7 +178,6 @@ class _CompareScreenState extends State<CompareScreen> {
       ),
       body: Column(
         children: [
-          // סרגל בחירת תבנית תצוגה (Templates)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             child: Row(
@@ -215,8 +200,6 @@ class _CompareScreenState extends State<CompareScreen> {
               }),
             ),
           ),
-
-          // אזור הקולאז' שיישמר וישותף כתמונה אחת
           Expanded(
             child: Center(
               child: Padding(
@@ -239,7 +222,6 @@ class _CompareScreenState extends State<CompareScreen> {
                                   : 1.0,
                           child: _buildTemplateLayout(),
                         ),
-                        // פס מיתוג תחתון
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(
@@ -270,7 +252,6 @@ class _CompareScreenState extends State<CompareScreen> {
               ),
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: FloatingActionButton(
@@ -283,13 +264,11 @@ class _CompareScreenState extends State<CompareScreen> {
     );
   }
 
-  // בניית הפריסה הדינמית לפי כמות התמונות והתבנית שנבחרה
   Widget _buildTemplateLayout() {
     final count = _selectedImages.length;
 
     if (count == 2) {
       if (_layoutIndex == 0) {
-        // 2 תמונות: זה לצד זה
         return Row(
           children: [
             Expanded(child: _buildSlot(0)),
@@ -298,7 +277,6 @@ class _CompareScreenState extends State<CompareScreen> {
           ],
         );
       } else {
-        // 2 תמונות: למעלה ולמטה
         return Column(
           children: [
             Expanded(child: _buildSlot(0)),
@@ -311,7 +289,6 @@ class _CompareScreenState extends State<CompareScreen> {
 
     if (count == 3) {
       if (_layoutIndex == 0) {
-        // 3 תמונות: 3 עמודות רצופות
         return Row(
           children: [
             Expanded(child: _buildSlot(0)),
@@ -322,7 +299,6 @@ class _CompareScreenState extends State<CompareScreen> {
           ],
         );
       } else if (_layoutIndex == 1) {
-        // 3 תמונות: 1 גדולה בצד + 2 מוערמות בצד השני
         return Row(
           children: [
             Expanded(flex: 3, child: _buildSlot(0)),
@@ -340,7 +316,6 @@ class _CompareScreenState extends State<CompareScreen> {
           ],
         );
       } else {
-// 3 תמונות: 1 גדולה למעלה + 2 למטה
         return Column(
           children: [
             Expanded(flex: 3, child: _buildSlot(0)),
@@ -359,9 +334,7 @@ class _CompareScreenState extends State<CompareScreen> {
         );
       }
     }
-// 4 תמונות
     if (_layoutIndex == 0) {
-// רשת 2x2 קלאסית
       return Column(
         children: [
           Expanded(
@@ -386,7 +359,6 @@ class _CompareScreenState extends State<CompareScreen> {
         ],
       );
     } else if (_layoutIndex == 1) {
-// 4 עמודות רצופות (ציר זמן)
       return Row(
         children: [
           Expanded(child: _buildSlot(0)),
@@ -399,7 +371,6 @@ class _CompareScreenState extends State<CompareScreen> {
         ],
       );
     } else {
-// 1 גדולה + 3 קטנות בצד
       return Row(
         children: [
           Expanded(flex: 3, child: _buildSlot(0)),
@@ -439,29 +410,28 @@ class _CompareScreenState extends State<CompareScreen> {
                 width: double.infinity,
                 height: double.infinity),
           ),
-// סרגל כלים קטן למשבצת (החלפת תמונה / איפוס זום / הסרת משבצת)
-          Positioned(
-            top: 4,
-            left: 4,
-            right: 4,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    _miniActionBtn(
-                        Icons.swap_horiz, () => _pickImageForSlot(index)),
-                    const SizedBox(width: 4),
-                    _miniActionBtn(Icons.crop_free,
-                        () => controller.value = Matrix4.identity()),
-                  ],
-                ),
-                if (_selectedImages.length > 2)
-                  _miniActionBtn(Icons.close, () => _removeSlot(index)),
-              ],
+          if (!_isSharing)
+            Positioned(
+              top: 4,
+              left: 4,
+              right: 4,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      _miniActionBtn(
+                          Icons.swap_horiz, () => _pickImageForSlot(index)),
+                      const SizedBox(width: 4),
+                      _miniActionBtn(Icons.crop_free,
+                          () => controller.value = Matrix4.identity()),
+                    ],
+                  ),
+                  if (_selectedImages.length > 2)
+                    _miniActionBtn(Icons.close, () => _removeSlot(index)),
+                ],
+              ),
             ),
-          ),
-// תאריך הצילום בתחתית
           Positioned(
             bottom: 6,
             left: 4,
