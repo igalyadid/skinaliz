@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.helloworld"
+    namespace = "com.skinaliz.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
