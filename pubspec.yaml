@@ -1,5 +1,5 @@
-name: helloworld
-description: A new Flutter project.
+name: skinaliz
+description: A comparing face & manage progress.
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -18,11 +18,18 @@ dependencies:
   share_plus: ^10.0.2
   image_picker: ^1.1.2
   exif: ^3.3.0
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  build_runner: ^2.15.1
+
+flutter_icons:
+ image_path: "icon/icon_master.png"
+ android: true
+ ios: true
 
 flutter:
   config:
