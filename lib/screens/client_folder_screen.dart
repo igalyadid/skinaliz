@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:share_plus/share_plus.dart';
 import '../l10n/app_strings.dart';
 import '../services/storage_service.dart';
 import '../widgets/imageGrid_item.dart';
@@ -66,7 +67,7 @@ class _ClientFolderScreenState extends State<ClientFolderScreen> {
     }
   }
 
-  void _openCompare({bool onlySelected = false}) {
+  Future<void> _openCompare({bool onlySelected = false}) async {
     List<File> selectedList;
     if (onlySelected &&
         _selectedPaths.length >= 2 &&
@@ -74,22 +75,23 @@ class _ClientFolderScreenState extends State<ClientFolderScreen> {
       selectedList = _images
           .where((f) => _selectedPaths.contains(f.path))
           .toList()
-        ..sort((a, b) => a.path.compareTo(b.path)); // מיון מהישנה לחדשה
+        ..sort((a, b) => a.path.compareTo(b.path));
     } else {
-      // ברירת מחדל אם נכנסים מהסרגל הרגיל: 2 התמונות (הישנה ביותר והחדשה ביותר)
       selectedList = [_images.last, _images.first];
     }
 
-    Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => CompareScreen(
+          clientDir: _currentClientDir,
           clientName: _clientName,
           allImages: _images,
           initialSelectedImages: selectedList,
         ),
       ),
     );
+    _loadImages();
   }
 
   Future<void> _deleteSelected() async {
@@ -282,6 +284,7 @@ class _ClientFolderScreenState extends State<ClientFolderScreen> {
   }
 
   void _showPreview(File file, String dateStr) {
+    final s = AppStrings.of(context);
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
@@ -291,16 +294,34 @@ class _ClientFolderScreenState extends State<ClientFolderScreen> {
           children: [
             Center(child: InteractiveViewer(child: Image.file(file))),
             Positioned(
-                top: 8,
-                right: 8,
+              top: 12,
+              right: 12,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(8)),
                 child:
-                    Text(dateStr, style: const TextStyle(color: Colors.white))),
+                    Text(dateStr, style: const TextStyle(color: Colors.white)),
+              ),
+            ),
             Positioned(
               top: 4,
               left: 4,
-              child: IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white),
-                  onPressed: () => Navigator.pop(ctx)),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.share, color: Colors.white),
+                    onPressed: () => Share.shareXFiles([XFile(file.path)],
+                        text: s.shareText(_clientName)),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

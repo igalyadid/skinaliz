@@ -64,10 +64,12 @@ class StorageService {
     try {
       if (!await clientDir.exists()) return [];
       final entities = await clientDir.list().toList();
-      final files = entities
-          .whereType<File>()
-          .where((f) => f.path.toLowerCase().endsWith('.jpg'))
-          .toList();
+      final files = entities.whereType<File>().where((f) {
+        final lower = f.path.toLowerCase();
+        return lower.endsWith('.jpg') ||
+            lower.endsWith('.jpeg') ||
+            lower.endsWith('.png');
+      }).toList();
       files.sort((a, b) => b.path.compareTo(a.path));
       return files;
     } catch (e) {
@@ -92,6 +94,16 @@ class StorageService {
     } catch (_) {}
 
     return savedFile;
+  }
+
+  // שמירת תמונת קולאז' ההשוואה ישירות בתיק הלקוח
+  static Future<File> saveComparisonImage(
+      Directory clientDir, Uint8List pngBytes) async {
+    final now = DateTime.now();
+    final timestamp = _formatTimestamp(now);
+    final fileName = '${timestamp}_Compare.png';
+    final savedFile = File('${clientDir.path}/$fileName');
+    return await savedFile.writeAsBytes(pngBytes);
   }
 
   static Future<int> importGalleryImages(

@@ -36,6 +36,17 @@ class SkinalizApp extends StatelessWidget {
         Locale('he'),
         Locale('ru'),
       ],
+      // הגנה אוטומטית על כל המסכים מפני סרגל הניווט התחתון של המכשיר
+      builder: (context, child) {
+        return Container(
+          color: Colors.black,
+          child: SafeArea(
+            top: false, // ה-AppBar כבר מטפל בחלק העליון
+            bottom: true, // מרים את כל הכפתורים התחתונים מעל סרגל המכשיר
+            child: child ?? const SizedBox.shrink(),
+          ),
+        );
+      },
       home: const ClientsListScreen(),
     );
   }
